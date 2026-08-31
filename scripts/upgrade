@@ -3,6 +3,10 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+# The "main" named port is auto-exported as $port by the core, but
+# additional named ports (here: "peer") are not - fetch it explicitly.
+peer_port=$(ynh_app_setting_get --app="$app" --key=peer_port)
+
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
