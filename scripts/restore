@@ -3,8 +3,8 @@
 source "$(dirname "$0")/_common.sh"
 source /usr/share/yunohost/helpers
 
-ynh_restore --origin_path="$install_dir"
-ynh_restore --origin_path="$data_dir"
+ynh_restore_file --origin_path="$install_dir" --dest_path="$install_dir"
+ynh_restore_file --origin_path="$data_dir" --dest_path="$data_dir"
 
 chown -R "$app:www-data" "$install_dir"
 chown -R "$app:www-data" "$data_dir"
@@ -13,12 +13,12 @@ chmod -R o-rwx "$install_dir"
 
 yunohost service add "$app" --description="Nostr relay with quantum walk propagation" --log="/var/log/$app/$app.log"
 
-ynh_restore --origin_path="/etc/systemd/system/$app.service"
+ynh_restore_file --origin_path="/etc/systemd/system/$app.service" --dest_path="/etc/systemd/system/$app.service"
 systemctl daemon-reload
 
-ynh_restore --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-ynh_restore --origin_path="$(peer_nginx_conf_path)"
-ynh_restore --origin_path="/var/log/$app" --not_mandatory
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf" --dest_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore_file --origin_path="$(peer_nginx_conf_path)" --dest_path="$(peer_nginx_conf_path)"
+ynh_restore_file --origin_path="/var/log/$app" --dest_path="/var/log/$app" --not_mandatory
 
 systemctl reload nginx
 
