@@ -3,16 +3,24 @@
 source "$(dirname "$0")/_common.sh"
 source /usr/share/yunohost/helpers
 
+ynh_script_progression "Stopping and removing the service..."
+
 ynh_systemd_action --service_name="$app" --action="stop" --line_match="stopped" || true
 yunohost service remove "$app" || true
 
 ynh_remove_systemd_config
+
+ynh_script_progression "Removing nginx configuration..."
 
 ynh_remove_nginx_config
 ynh_app_remove_peer_nginx_config
 
 ynh_exec_warn_less yunohost firewall disallow TCP "$public_peer_port"
 
+ynh_script_progression "Removing app files..."
+
+# Logs are deliberately left in place - the core handles their retention,
+# and removing them here would also wipe them on a failed upgrade.
 ynh_secure_remove --file="$install_dir"
 
-ynh_secure_remove --file="/var/log/$app"
+ynh_script_progression "Removal complete"

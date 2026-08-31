@@ -7,6 +7,8 @@ source /usr/share/yunohost/helpers
 # STOP SYSTEMD SERVICE
 #=================================================
 
+ynh_script_progression "Stopping quantum-relay..."
+
 ynh_systemd_action --service_name="$app" --action="stop" --line_match="stopped" || true
 
 #=================================================
@@ -14,6 +16,7 @@ ynh_systemd_action --service_name="$app" --action="stop" --line_match="stopped" 
 #=================================================
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]; then
+	ynh_script_progression "Downloading the quantum-relay binary..."
 	ynh_setup_source --dest_dir="$install_dir" --keep="config.yaml"
 	# See scripts/install: the downloaded asset lands as $install_dir/main.
 	mv "$install_dir/main" "$install_dir/quantum-relay"
@@ -27,6 +30,8 @@ fi
 # REFRESH CONFIGURATION
 #=================================================
 
+ynh_script_progression "Refreshing configuration..."
+
 require_auth_yaml="false"
 if [ "${require_auth:-0}" -eq 1 ]; then
 	require_auth_yaml="true"
@@ -35,6 +40,8 @@ fi
 ynh_add_config --template="config.yaml" --destination="$install_dir/config.yaml"
 chmod 640 "$install_dir/config.yaml"
 chown "$app:www-data" "$install_dir/config.yaml"
+
+yunohost service add "$app" --description="Nostr relay with quantum walk propagation" --log="/var/log/$app/$app.log"
 
 ynh_add_systemd_config
 ynh_add_nginx_config
@@ -46,4 +53,8 @@ ynh_exec_warn_less yunohost firewall allow --no-upnp TCP "$public_peer_port"
 # START SYSTEMD SERVICE
 #=================================================
 
+ynh_script_progression "Starting quantum-relay..."
+
 ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log" --line_match="listening"
+
+ynh_script_progression "Upgrade complete"
