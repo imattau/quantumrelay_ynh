@@ -49,7 +49,9 @@ ram.runtime = "50M"
 
     [install.public_peer_port]
     ask.en = "Public port for the relay-to-relay peer mesh (must differ from 443/80 and be reachable from other relays)"
-    type = "port"
+    type = "number"
+    min = 1024
+    max = 65535
     default = 8443
 
     [install.require_auth]
