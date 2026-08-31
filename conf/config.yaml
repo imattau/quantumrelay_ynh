@@ -5,7 +5,7 @@ relay:
   description: "__RELAY_DESCRIPTION__"
 
 peer:
-  listen: "127.0.0.1:__PEER_PORT__"
+  listen: "127.0.0.1:__PORT_PEER__"
   public_port: __PUBLIC_PEER_PORT__
 
 quantum:
