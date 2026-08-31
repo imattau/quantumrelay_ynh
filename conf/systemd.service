@@ -12,12 +12,15 @@ ExecStart=__INSTALL_DIR__/quantum-relay
 Restart=on-failure
 RestartSec=5
 
-# Hardening
+# Hardening. ProtectSystem=strict already makes everything read-only
+# except ReadWritePaths, including __DATA_DIR__ (which lives under
+# /home/yunohost.app/__APP__) - ProtectHome=yes is deliberately omitted
+# since it separately makes /home inaccessible and empty, which fights
+# the ReadWritePaths carve-out for a data dir that lives there.
 NoNewPrivileges=yes
 PrivateTmp=yes
 ProtectSystem=strict
 ReadWritePaths=__DATA_DIR__
-ProtectHome=yes
 
 StandardOutput=append:/var/log/__APP__/__APP__.log
 StandardError=inherit
