@@ -15,7 +15,8 @@ ynh_systemd_action --service_name="$app" --action="stop" --line_match="stopped" 
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]; then
 	ynh_setup_source --dest_dir="$install_dir" --keep="config.yaml"
-	mv "$install_dir/quantum-relay-linux-"* "$install_dir/quantum-relay" 2>/dev/null || true
+	# See scripts/install: the downloaded asset lands as $install_dir/main.
+	mv "$install_dir/main" "$install_dir/quantum-relay"
 	chmod +x "$install_dir/quantum-relay"
 	chmod 750 "$install_dir"
 	chmod -R o-rwx "$install_dir"

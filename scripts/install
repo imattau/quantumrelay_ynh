@@ -11,7 +11,9 @@ ynh_setup_source --dest_dir="$install_dir"
 chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
 chown -R "$app:www-data" "$install_dir"
-mv "$install_dir/quantum-relay-linux-"* "$install_dir/quantum-relay" 2>/dev/null || true
+# ynh_setup_source (source id "main", format "other") saves the downloaded
+# asset as $install_dir/main, not under its original release filename.
+mv "$install_dir/main" "$install_dir/quantum-relay"
 chmod +x "$install_dir/quantum-relay"
 
 mkdir -p "$data_dir"
