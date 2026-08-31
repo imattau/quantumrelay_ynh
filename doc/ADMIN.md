@@ -13,22 +13,30 @@ This app exposes two separate public endpoints:
   proxied through the standard app vhost, since it isn't a `location` under
   your domain, it's its own `listen <port> ssl` server block.
 
-If you change the peer port after install, you'll need to reconfigure any
-peer relays that point at the old one.
+If you change the peer port from the config panel (below), the old firewall
+port is closed, the new one opened, and the peer TLS server block rewritten
+automatically — but you'll still need to reconfigure any peer relays that
+were pointing at the old port.
 
-## Configuration beyond the install questions
+## Configuration panel
 
-`config.yaml` (in the app's install directory) exposes more than the install
-wizard does — quantum-walk tuning (`gamma`, `fetch_threshold`, tick
-intervals), rate limits, and, importantly, the `peers:` and `trust:` lists
-that make the mesh actually mesh with anything. The install wizard leaves
-`peers: []`; you need to edit `config.yaml` directly and restart the service
-to add peer relays.
+Apps → Quantum Relay → Config in the webadmin exposes everything that
+matters day-to-day, grouped into: relay identity, access control (NIP-42),
+rate limits, the peer mesh (public port and the `peers:` list), trust
+(weighted peers), and quantum-walk tuning (`gamma`, `fetch_threshold`, tick
+intervals, max concurrent fetches). Peer relay URLs and trusted peer URLs
+are entered as a comma-separated list of `ws://` / `wss://` URLs.
 
-Manual edits to `config.yaml` are preserved across upgrades unless you also
-change the corresponding install-time setting (YunoHost detects the file has
-been hand-modified and won't silently clobber it) — but always back up your
-edits before an upgrade regardless.
+Saving the panel edits `config.yaml` directly (not just YunoHost's app
+settings) and restarts the `quantum-relay` service. The quantum-walk tuning
+section is the propagation model's actual knobs, not cosmetic settings —
+the defaults are sane for most deployments; only change them if you
+understand `cmd/quantum-relay/README.md`'s propagation math.
+
+Anything not in the panel (currently nothing — the panel covers the full
+`config.yaml` schema except the internal listen addresses, which are
+YunoHost-managed ports) would need a direct edit of `config.yaml` followed
+by a service restart.
 
 ## Storage
 

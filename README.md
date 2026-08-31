@@ -22,6 +22,14 @@ Unlike most YunoHost apps, this one needs two things open to the internet:
 the relay itself (443, like any app) and the peer-mesh port (configurable
 at install, default 8443). See [`doc/ADMIN.md`](./doc/ADMIN.md).
 
+## Config panel
+
+Apps → Quantum Relay → Config in the webadmin exposes the app's full
+`config.yaml` schema: relay identity, NIP-42 auth, rate limits, peer mesh
+(port + peer list), trust weighting, and quantum-walk tuning. See
+[`config_panel.toml`](./config_panel.toml) and
+[`doc/ADMIN.md`](./doc/ADMIN.md).
+
 ## Links
 
 - Report a package-specific bug: this repository's issue tracker

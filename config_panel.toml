@@ -1,0 +1,130 @@
+#:schema https://github.com/YunoHost/apps/raw/main/schemas/config_panel.v1.schema.json
+
+version = "1.0"
+
+[main]
+name.en = "Quantum Relay configuration"
+
+# Reload-or-restart both after any change here. quantum-relay for
+# everything, nginx specifically for public_peer_port (its custom setter
+# rewrites the peer TLS server block).
+services = ["__APP__", "nginx"]
+
+    [main.identity]
+    name.en = "Relay identity"
+
+        [main.identity.relay_name]
+        ask.en = "Relay name"
+        type = "string"
+        bind = "name:__INSTALL_DIR__/config.yaml"
+
+        [main.identity.relay_description]
+        ask.en = "Relay description"
+        type = "string"
+        optional = true
+        bind = "description:__INSTALL_DIR__/config.yaml"
+
+    [main.access]
+    name.en = "Access control"
+
+        [main.access.require_auth]
+        ask.en = "Require NIP-42 authentication before accepting EVENT submissions"
+        type = "boolean"
+        bind = "required:__INSTALL_DIR__/config.yaml"
+
+    [main.rate_limits]
+    name.en = "Rate limiting"
+
+        [main.rate_limits.client_events_per_sec]
+        ask.en = "Client events per second"
+        type = "number"
+        min = 1
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [main.rate_limits.peer_announce_per_sec]
+        ask.en = "Peer announce messages per second"
+        type = "number"
+        min = 1
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+    [main.mesh]
+    name.en = "Peer mesh"
+    help.en = "Other quantum-relay instances gossip notes and reputation over this list."
+
+        [main.mesh.public_peer_port]
+        ask.en = "Public peer-mesh port"
+        type = "number"
+        min = 1024
+        max = 65535
+        help.en = "Changing this closes the old firewall port, opens the new one, and rewrites the peer TLS listener. Any peer relay pointed at the old port will need to be reconfigured."
+        # No 'bind': a custom set__public_peer_port() in scripts/config
+        # handles config.yaml, the nginx peer conf, and the firewall.
+
+        [main.mesh.peers]
+        ask.en = "Peer relay URLs"
+        type = "tags"
+        optional = true
+        help.en = "Comma-separated, e.g. ws://relay1.example.com:8081, ws://relay2.example.com:8081"
+        # bind = "null": stored as a YAML list, not a single "key: value"
+        # line, so it needs the custom get__peers()/set__peers() in
+        # scripts/config rather than the generic file bind.
+        bind = "null"
+
+    [main.trust]
+    name.en = "Trust"
+    help.en = "Trusted peers get weighted consensus merges, trusted broadcasts, and weighted reputation deltas."
+
+        [main.trust.trust_enabled]
+        ask.en = "Enable weighted trust for configured peers"
+        type = "boolean"
+        bind = "enabled:__INSTALL_DIR__/config.yaml"
+
+        [main.trust.trust_weight]
+        ask.en = "Trust weight multiplier"
+        type = "string"
+        pattern.regexp = '^\d+(\.\d+)?$'
+        pattern.error = "Must be a positive number"
+        bind = "weight:__INSTALL_DIR__/config.yaml"
+
+        [main.trust.trust_peers]
+        ask.en = "Trusted peer URLs"
+        type = "tags"
+        optional = true
+        help.en = "Comma-separated. Must be a subset of the peer relay URLs above to have any effect."
+        bind = "null"
+
+    [main.quantum]
+    name.en = "Quantum walk tuning"
+    help.en = "Advanced: controls the propagation model directly. Defaults are sane for most deployments."
+
+        [main.quantum.gamma]
+        ask.en = "Reputation damping factor (gamma)"
+        type = "string"
+        pattern.regexp = '^\d+(\.\d+)?$'
+        pattern.error = "Must be a positive number"
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [main.quantum.fetch_threshold]
+        ask.en = "Fetch probability threshold"
+        type = "string"
+        pattern.regexp = '^\d+(\.\d+)?$'
+        pattern.error = "Must be a positive number"
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [main.quantum.consensus_tick_ms]
+        ask.en = "Consensus tick interval (ms)"
+        type = "number"
+        min = 50
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [main.quantum.quantum_tick_ms]
+        ask.en = "Quantum walk tick interval (ms)"
+        type = "number"
+        min = 50
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [main.quantum.max_concurrent_fetches]
+        ask.en = "Max concurrent fetches"
+        type = "number"
+        min = 1
+        bind = ":__INSTALL_DIR__/config.yaml"

@@ -1,0 +1,97 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+ynh_abort_if_errors
+
+#=================================================
+# LIST-TYPED FIELDS (peers, trust.peers)
+#=================================================
+# Both are YAML lists spanning multiple lines, which the generic file-bind
+# mechanism explicitly doesn't support - so config.yaml is round-tripped
+# through PyYAML instead. python3-yaml is a hard dependency of the
+# yunohost package itself, so it's always present.
+
+get__peers() {
+	python3 - "$install_dir/config.yaml" <<'PYEOF'
+import sys, yaml
+
+with open(sys.argv[1]) as f:
+    data = yaml.safe_load(f) or {}
+print(",".join(data.get("peers") or []))
+PYEOF
+}
+
+set__peers() {
+	python3 - "$install_dir/config.yaml" "$peers" <<'PYEOF'
+import sys, yaml
+
+path, raw = sys.argv[1], sys.argv[2]
+items = [p.strip() for p in raw.split(",") if p.strip()]
+
+with open(path) as f:
+	data = yaml.safe_load(f) or {}
+data["peers"] = items
+
+with open(path, "w") as f:
+	yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
+PYEOF
+	ynh_app_setting_set --app="$app" --key=peers --value="$peers"
+}
+
+get__trust_peers() {
+	python3 - "$install_dir/config.yaml" <<'PYEOF'
+import sys, yaml
+
+with open(sys.argv[1]) as f:
+    data = yaml.safe_load(f) or {}
+print(",".join((data.get("trust") or {}).get("peers") or []))
+PYEOF
+}
+
+set__trust_peers() {
+	python3 - "$install_dir/config.yaml" "$trust_peers" <<'PYEOF'
+import sys, yaml
+
+path, raw = sys.argv[1], sys.argv[2]
+items = [p.strip() for p in raw.split(",") if p.strip()]
+
+with open(path) as f:
+	data = yaml.safe_load(f) or {}
+data.setdefault("trust", {})["peers"] = items
+
+with open(path, "w") as f:
+	yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
+PYEOF
+	ynh_app_setting_set --app="$app" --key=trust_peers --value="$trust_peers"
+}
+
+#=================================================
+# PUBLIC PEER PORT
+#=================================================
+# Changing this needs more than a "key: value" line edit: the firewall
+# rule and the peer TLS server block (conf/nginx-peer.conf) both hardcode
+# the port, so they need to be regenerated too. Left unbound in
+# config_panel.toml (defaults to reading/writing the app setting) with
+# only this custom setter overriding the write path.
+
+set__public_peer_port() {
+	local previous_port="${old[public_peer_port]}"
+
+	ynh_write_var_in_file --file="$install_dir/config.yaml" --key="public_port" --value="$public_peer_port"
+
+	# Regenerates conf/nginx-peer.conf from the template with the new
+	# port and reloads nginx (defined in _common.sh).
+	ynh_app_peer_nginx_config
+
+	if [[ -n "$previous_port" && "$previous_port" != "$public_peer_port" ]]; then
+		ynh_exec_warn_less yunohost firewall disallow TCP "$previous_port"
+	fi
+	ynh_exec_warn_less yunohost firewall allow --no-upnp TCP "$public_peer_port"
+
+	ynh_app_setting_set --app="$app" --key=public_peer_port --value="$public_peer_port"
+}
+
+#=================================================
+ynh_app_config_run "$1"
