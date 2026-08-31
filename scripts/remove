@@ -5,7 +5,7 @@ source /usr/share/yunohost/helpers
 
 ynh_script_progression "Stopping and removing the service..."
 
-ynh_systemd_action --service_name="$app" --action="stop" --line_match="stopped" || true
+ynh_systemd_action --service_name="$app" --action="stop" || true
 yunohost service remove "$app" || true
 
 ynh_remove_systemd_config

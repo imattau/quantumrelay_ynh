@@ -3,7 +3,7 @@
 source "$(dirname "$0")/_common.sh"
 source /usr/share/yunohost/helpers
 
-ynh_systemd_action --service_name="$app" --action="stop" --line_match="stopped" || true
+ynh_systemd_action --service_name="$app" --action="stop" || true
 
 ynh_change_url_nginx_config
 

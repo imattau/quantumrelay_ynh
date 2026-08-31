@@ -5,7 +5,7 @@ name = "Quantum Relay"
 description.en = "Nostr relay with quantum-walk propagation and reputation-based spam suppression"
 description.fr = "Relais Nostr avec propagation par marche quantique et suppression du spam basée sur la réputation"
 
-version = "0.1.0~ynh5"
+version = "0.1.1~ynh1"
 
 maintainers = []
 
@@ -57,16 +57,16 @@ ram.runtime = "50M"
 
 [resources]
     [resources.sources.main]
-        url = "https://github.com/imattau/quantum-rely/releases/download/v0.1.0/quantum-relay-linux-amd64"
-        sha256 = "9e878ede86fce2b91b0bae8e934f8c37f8288dccaacef32943426106a1efc4d6"
+        url = "https://github.com/imattau/quantum-rely/releases/download/v0.1.1/quantum-relay-linux-amd64"
+        sha256 = "fa6d393caa3480368bb6bcafc883cd1aecfc492419c51f1075bd2ab3c528eaff"
         format = "whatever"
         extract = false
         autoupdate.strategy = "latest_github_release"
         autoupdate.asset = "quantum-relay-linux-amd64"
 
         [resources.sources.main.arm64]
-        url = "https://github.com/imattau/quantum-rely/releases/download/v0.1.0/quantum-relay-linux-arm64"
-        sha256 = "8ec19f2b6a8bfbfdaa2981aa108ee455bdcd00002aad94595010edfc6b0714c1"
+        url = "https://github.com/imattau/quantum-rely/releases/download/v0.1.1/quantum-relay-linux-arm64"
+        sha256 = "7b768e12fd2f52da268ecdc7245c0b1590c532201879ba4d1c806a77ab199d29"
 
     [resources.system_user]
 
