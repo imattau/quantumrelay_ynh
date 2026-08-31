@@ -1,0 +1,101 @@
+packaging_format = 2
+
+id = "quantumrelay"
+name = "Quantum Relay"
+description.en = "Nostr relay with quantum-walk propagation and reputation-based spam suppression"
+description.fr = "Relais Nostr avec propagation par marche quantique et suppression du spam basée sur la réputation"
+
+version = "0.1.0~ynh1"
+
+maintainers = []
+
+[upstream]
+license = "MIT"
+website = "https://github.com/imattau/quantum-rely"
+code = "https://github.com/imattau/quantum-rely"
+cpe = ""
+
+[integration]
+yunohost = ">= 11.2"
+architectures = ["amd64", "arm64"]
+multi_instance = true
+ldap = false
+sso = false
+disk = "100M"
+ram.build = "50M"
+ram.runtime = "50M"
+
+[install]
+    [install.domain]
+    type = "domain"
+
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+    # A Nostr relay must accept unauthenticated client connections; it is not
+    # gated behind YunoHost SSO. Access control for the relay itself (NIP-42
+    # auth, spam/reputation gating) is handled by quantum-relay, not YunoHost.
+
+    [install.relay_name]
+    ask.en = "Relay name (shown in the NIP-11 info document)"
+    type = "string"
+    default = "Quantum Relay"
+
+    [install.relay_description]
+    ask.en = "Relay description (shown in the NIP-11 info document)"
+    type = "string"
+    default = "Nostr relay with quantum walk propagation"
+    optional = true
+
+    [install.public_peer_port]
+    ask.en = "Public port for the relay-to-relay peer mesh (must differ from 443/80 and be reachable from other relays)"
+    type = "port"
+    default = 8443
+
+    [install.require_auth]
+    ask.en = "Require NIP-42 authentication before accepting EVENT submissions from clients?"
+    type = "boolean"
+    default = false
+
+[resources]
+    [resources.sources.main]
+        url = "https://github.com/imattau/quantum-rely/releases/download/v0.1.0/quantum-relay-linux-amd64"
+        sha256 = "9e878ede86fce2b91b0bae8e934f8c37f8288dccaacef32943426106a1efc4d6"
+        format = "other"
+        extract = false
+        autoupdate.strategy = "latest_github_release"
+        autoupdate.asset = "quantum-relay-linux-amd64"
+
+        [resources.sources.main.arm64]
+        url = "https://github.com/imattau/quantum-rely/releases/download/v0.1.0/quantum-relay-linux-arm64"
+        sha256 = "8ec19f2b6a8bfbfdaa2981aa108ee455bdcd00002aad94595010edfc6b0714c1"
+        format = "other"
+        extract = false
+        autoupdate.strategy = "latest_github_release"
+        autoupdate.asset = "quantum-relay-linux-arm64"
+
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.data_dir]
+
+    [resources.permissions]
+        main.url = "/"
+        main.show_tile = false
+        main.protected = false
+
+    [resources.ports]
+        # Internal, loopback-only listen port for the client-facing relay.
+        # Reverse-proxied by YunoHost's nginx on 443/80.
+        main.default = 8080
+        main.exposed = false
+
+        # Internal, loopback-only listen port for the peer mesh. Reverse-
+        # proxied by a dedicated nginx server block (conf/nginx-peer.conf)
+        # on the public peer_port chosen at install time.
+        peer.default = 8081
+        peer.exposed = false
+
+    [resources.apt]
+        packages = []

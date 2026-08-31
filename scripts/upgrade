@@ -1,0 +1,48 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# STOP SYSTEMD SERVICE
+#=================================================
+
+ynh_systemd_action --service_name="$app" --action="stop" --line_match="stopped" || true
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+
+if [ "$upgrade_type" == "UPGRADE_APP" ]; then
+	ynh_setup_source --dest_dir="$install_dir" --keep="config.yaml"
+	mv "$install_dir/quantum-relay-linux-"* "$install_dir/quantum-relay" 2>/dev/null || true
+	chmod +x "$install_dir/quantum-relay"
+	chmod 750 "$install_dir"
+	chmod -R o-rwx "$install_dir"
+	chown -R "$app:www-data" "$install_dir"
+fi
+
+#=================================================
+# REFRESH CONFIGURATION
+#=================================================
+
+require_auth_yaml="false"
+if [ "${require_auth:-0}" -eq 1 ]; then
+	require_auth_yaml="true"
+fi
+
+ynh_add_config --template="config.yaml" --destination="$install_dir/config.yaml"
+chmod 640 "$install_dir/config.yaml"
+chown "$app:www-data" "$install_dir/config.yaml"
+
+ynh_add_systemd_config
+ynh_add_nginx_config
+ynh_app_peer_nginx_config
+
+ynh_exec_warn_less yunohost firewall allow --no-upnp TCP "$public_peer_port"
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+
+ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log" --line_match="listening"

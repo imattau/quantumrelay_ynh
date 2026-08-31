@@ -1,0 +1,27 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+ynh_restore --origin_path="$install_dir"
+ynh_restore --origin_path="$data_dir"
+
+chown -R "$app:www-data" "$install_dir"
+chown -R "$app:www-data" "$data_dir"
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+
+yunohost service add "$app" --description="Nostr relay with quantum walk propagation" --log="/var/log/$app/$app.log"
+
+ynh_restore --origin_path="/etc/systemd/system/$app.service"
+systemctl daemon-reload
+
+ynh_restore --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore --origin_path="$(peer_nginx_conf_path)"
+ynh_restore --origin_path="/var/log/$app" --not_mandatory
+
+systemctl reload nginx
+
+ynh_exec_warn_less yunohost firewall allow --no-upnp TCP "$public_peer_port"
+
+ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log" --line_match="listening"

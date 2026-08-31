@@ -1,0 +1,27 @@
+[Unit]
+Description=Quantum Relay (__APP__) - Nostr relay with quantum walk propagation
+After=network.target
+
+[Service]
+Type=simple
+User=__APP__
+Group=__APP__
+WorkingDirectory=__INSTALL_DIR__
+Environment=RELY_CONFIG=__INSTALL_DIR__/config.yaml
+ExecStart=__INSTALL_DIR__/quantum-relay
+Restart=on-failure
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=__DATA_DIR__
+ProtectHome=yes
+
+StandardOutput=append:/var/log/__APP__/__APP__.log
+StandardError=inherit
+SyslogIdentifier=__APP__
+
+[Install]
+WantedBy=multi-user.target

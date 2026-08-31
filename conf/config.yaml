@@ -1,0 +1,33 @@
+relay:
+  listen: "127.0.0.1:__PORT__"
+  public_url: "wss://__DOMAIN__/"
+  name: "__RELAY_NAME__"
+  description: "__RELAY_DESCRIPTION__"
+
+peer:
+  listen: "127.0.0.1:__PEER_PORT__"
+  public_port: __PUBLIC_PEER_PORT__
+
+quantum:
+  gamma: 0.5
+  fetch_threshold: 0.05
+  consensus_tick_ms: 500
+  quantum_tick_ms: 1000
+  max_concurrent_fetches: 32
+
+spam:
+  client_events_per_sec: 10
+  peer_announce_per_sec: 100
+
+storage:
+  path: "__DATA_DIR__/rely.db"
+
+auth:
+  required: __REQUIRE_AUTH__
+
+peers: []
+
+trust:
+  enabled: false
+  weight: 2.0
+  peers: []

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+ynh_systemd_action --service_name="$app" --action="stop" --line_match="stopped" || true
+
+ynh_change_url_nginx_config
+
+# Relay's own public_url and the peer TLS block both need to move to the new
+# domain (the peer mesh's public port stays the same, only the cert/domain
+# changes).
+require_auth_yaml="false"
+if [ "${require_auth:-0}" -eq 1 ]; then
+	require_auth_yaml="true"
+fi
+
+ynh_add_config --template="config.yaml" --destination="$install_dir/config.yaml"
+chmod 640 "$install_dir/config.yaml"
+chown "$app:www-data" "$install_dir/config.yaml"
+
+ynh_app_remove_peer_nginx_config
+ynh_app_peer_nginx_config
+
+ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log" --line_match="listening"
