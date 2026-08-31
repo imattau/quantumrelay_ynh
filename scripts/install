@@ -3,6 +3,10 @@
 source "$(dirname "$0")/_common.sh"
 source /usr/share/yunohost/helpers
 
+if [ "$public_peer_port" -lt 1024 ] || [ "$public_peer_port" -gt 65535 ]; then
+	ynh_die "public_peer_port must be between 1024 and 65535"
+fi
+
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================

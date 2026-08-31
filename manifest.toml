@@ -5,7 +5,7 @@ name = "Quantum Relay"
 description.en = "Nostr relay with quantum-walk propagation and reputation-based spam suppression"
 description.fr = "Relais Nostr avec propagation par marche quantique et suppression du spam basée sur la réputation"
 
-version = "0.1.1~ynh3"
+version = "0.1.1~ynh4"
 
 maintainers = []
 
@@ -47,16 +47,16 @@ ram.runtime = "50M"
 
     [install.public_peer_port]
     ask.en = "Public port for the relay-to-relay peer mesh (must differ from 443/80 and be reachable from other relays)"
-    type = "number"
-    # min/max aren't in the published manifest.v2 JSON schema for install
-    # questions (package_linter flags them), but the core's NumberOption
-    # class genuinely reads and enforces them regardless - and without an
-    # explicit max, it silently defaults to 200, rejecting any real port
-    # number. A schema gap, not a real restriction; omitting max breaks
-    # the installer outright.
-    min = 1024
-    max = 65535
-    default = 8443
+    # type="string"+pattern rather than type="number"+min/max: the
+    # manifest.v2 JSON schema forbids min/max on install questions
+    # (package_linter treats this as a critical schema-validation error),
+    # while the core's NumberOption class would otherwise silently cap at
+    # a default max=200 with no min/max set, rejecting any real port. The
+    # actual 1024-65535 bound is enforced in scripts/install.
+    type = "string"
+    pattern.regexp = "^[0-9]{4,5}$"
+    pattern.error = "Enter a 4 or 5 digit port number between 1024 and 65535"
+    default = "8443"
 
     [install.require_auth]
     ask.en = "Require NIP-42 authentication before accepting EVENT submissions from clients?"
