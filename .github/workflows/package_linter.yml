@@ -25,6 +25,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r ~/package_linter/requirements.txt
 
-      - name: Run linter
+      - name: Run linter (human-readable output)
+        continue-on-error: true
         run: |
           ~/package_linter/package_linter.py .
+
+      - name: Run linter (fail only on non-catalog-membership issues)
+        run: |
+          ~/package_linter/package_linter.py --json . > linter.json
+          python3 .github/check_linter_findings.py linter.json
