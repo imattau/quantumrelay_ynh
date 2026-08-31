@@ -5,7 +5,7 @@ name = "Quantum Relay"
 description.en = "Nostr relay with quantum-walk propagation and reputation-based spam suppression"
 description.fr = "Relais Nostr avec propagation par marche quantique et suppression du spam basée sur la réputation"
 
-version = "0.1.1~ynh2"
+version = "0.1.1~ynh3"
 
 maintainers = []
 
@@ -48,6 +48,14 @@ ram.runtime = "50M"
     [install.public_peer_port]
     ask.en = "Public port for the relay-to-relay peer mesh (must differ from 443/80 and be reachable from other relays)"
     type = "number"
+    # min/max aren't in the published manifest.v2 JSON schema for install
+    # questions (package_linter flags them), but the core's NumberOption
+    # class genuinely reads and enforces them regardless - and without an
+    # explicit max, it silently defaults to 200, rejecting any real port
+    # number. A schema gap, not a real restriction; omitting max breaks
+    # the installer outright.
+    min = 1024
+    max = 65535
     default = 8443
 
     [install.require_auth]
