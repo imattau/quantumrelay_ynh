@@ -25,7 +25,8 @@ at install, default 8443). See [`doc/ADMIN.md`](./doc/ADMIN.md).
 ## Config panel
 
 Apps → Quantum Relay → Config in the webadmin exposes the app's full
-`config.yaml` schema: relay identity, NIP-42 auth, rate limits, peer mesh
+`config.yaml` schema: relay identity, NIP-42 auth, authorized-npub allowlist,
+rate limits, peer mesh
 (port + peer list), trust weighting, and quantum-walk tuning. See
 [`config_panel.toml`](./config_panel.toml) and
 [`doc/ADMIN.md`](./doc/ADMIN.md).

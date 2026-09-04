@@ -67,6 +67,41 @@ PYEOF
 	ynh_app_setting_set --app="$app" --key=trust_peers --value="$trust_peers"
 }
 
+get__allowed_pubkeys() {
+	python3 - "$install_dir/config.yaml" <<'PYEOF'
+import sys, yaml
+
+with open(sys.argv[1]) as f:
+    data = yaml.safe_load(f) or {}
+print(",".join((data.get("auth") or {}).get("allowed_pubkeys") or []))
+PYEOF
+}
+
+set__allowed_pubkeys() {
+	if [ -x "$install_dir/quantum-relay" ]; then
+		version="$($install_dir/quantum-relay --version 2>/dev/null || true)"
+		case "$version" in
+			*"0.1.6"*|*"0.1.7"*|*"0.1.8"*|*"0.1.9"*|*"0.2."*|*"1."*) ;;
+			*) ynh_die "Authorized npubs require quantum-relay v0.1.6 or newer." ;;
+		esac
+	fi
+
+	python3 - "$install_dir/config.yaml" "$allowed_pubkeys" <<'PYEOF'
+import sys, yaml
+
+path, raw = sys.argv[1], sys.argv[2]
+items = [p.strip() for p in raw.split(",") if p.strip()]
+
+with open(path) as f:
+    data = yaml.safe_load(f) or {}
+data.setdefault("auth", {})["allowed_pubkeys"] = items
+
+with open(path, "w") as f:
+    yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
+PYEOF
+	ynh_app_setting_set --app="$app" --key=allowed_pubkeys --value="$allowed_pubkeys"
+}
+
 #=================================================
 # PUBLIC PEER PORT
 #=================================================

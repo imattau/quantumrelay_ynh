@@ -21,7 +21,8 @@ were pointing at the old port.
 ## Configuration panel
 
 Apps → Quantum Relay → Config in the webadmin exposes everything that
-matters day-to-day, grouped into: relay identity, access control (NIP-42),
+matters day-to-day, grouped into: relay identity, access control (NIP-42 and
+authorized npubs),
 rate limits, the peer mesh (public port and the `peers:` list), trust
 (weighted peers), and quantum-walk tuning (`gamma`, `fetch_threshold`, tick
 intervals, max concurrent fetches). Peer relay URLs and trusted peer URLs
@@ -37,6 +38,10 @@ Anything not in the panel (currently nothing — the panel covers the full
 `config.yaml` schema except the internal listen addresses, which are
 YunoHost-managed ports) would need a direct edit of `config.yaml` followed
 by a service restart.
+
+Authorized-npub management requires a relay binary with allowlist support
+(v0.1.6 or newer). The package refuses to save this setting against older
+binaries, which only support the global `auth.required` switch.
 
 ## Storage
 

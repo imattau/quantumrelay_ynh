@@ -32,6 +32,13 @@ services = ["__APP__", "nginx"]
         type = "boolean"
         bind = "required:__INSTALL_DIR__/config.yaml"
 
+        [main.access.allowed_pubkeys]
+        ask.en = "Authorized npubs"
+        type = "tags"
+        optional = true
+        help.en = "Only these npubs may publish events. Leave empty to allow any authenticated npub."
+        bind = "null"
+
     [main.rate_limits]
     name.en = "Rate limiting"
 
