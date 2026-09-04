@@ -20,3 +20,34 @@ ynh_app_remove_peer_nginx_config() {
 	ynh_secure_remove --file="$(peer_nginx_conf_path)"
 	systemctl reload nginx || true
 }
+
+# Re-apply the peers/trust_peers app settings into config.yaml.
+#
+# conf/config.yaml hardcodes `peers: []` and `trust.peers: []` - they're
+# YAML lists spanning multiple lines, which ynh_add_config's "key:file"
+# bind mechanism can't express, so they're intentionally left out of the
+# template and instead round-tripped through PyYAML by scripts/config's
+# get__peers/set__peers (see there for why). But that means any script
+# that re-renders config.yaml from the template - upgrade, change_url -
+# resets both lists to empty, silently dropping whatever mesh peers were
+# configured. Call this right after such a regen to restore them from the
+# peers/trust_peers app settings, which scripts/config keeps in sync in
+# settings.yml independently of config.yaml.
+ynh_app_reapply_peer_lists() {
+	python3 - "$install_dir/config.yaml" "${peers:-}" "${trust_peers:-}" <<'PYEOF'
+import sys, yaml
+
+path, peers_raw, trust_peers_raw = sys.argv[1], sys.argv[2], sys.argv[3]
+peers = [p.strip() for p in peers_raw.split(",") if p.strip()]
+trust_peers = [p.strip() for p in trust_peers_raw.split(",") if p.strip()]
+
+with open(path) as f:
+    data = yaml.safe_load(f) or {}
+
+data["peers"] = peers
+data.setdefault("trust", {})["peers"] = trust_peers
+
+with open(path, "w") as f:
+    yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
+PYEOF
+}

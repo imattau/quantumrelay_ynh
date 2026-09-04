@@ -40,6 +40,7 @@ if [ "${require_auth:-0}" -eq 1 ]; then
 fi
 
 ynh_add_config --template="config.yaml" --destination="$install_dir/config.yaml"
+ynh_app_reapply_peer_lists
 chmod 640 "$install_dir/config.yaml"
 chown "$app:www-data" "$install_dir/config.yaml"
 
