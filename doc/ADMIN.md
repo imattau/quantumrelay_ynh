@@ -22,7 +22,7 @@ were pointing at the old port.
 
 Apps → Quantum Relay → Config in the webadmin exposes everything that
 matters day-to-day, grouped into: relay identity, access control (NIP-42 and
-authorized npubs),
+authorized npubs), the read-only mesh dashboard,
 rate limits, the peer mesh (public port and the `peers:` list), trust
 (weighted peers), and quantum-walk tuning (`gamma`, `fetch_threshold`, tick
 intervals, max concurrent fetches). Peer relay URLs and trusted peer URLs
@@ -42,6 +42,11 @@ by a service restart.
 Authorized-npub management requires a relay binary with allowlist support
 (v0.1.6 or newer). The package refuses to save this setting against older
 binaries, which only support the global `auth.required` switch.
+
+Enable the mesh dashboard in the panel and add one or more dashboard
+administrator npubs. It is then available at `/mesh` and uses NIP-07/NIP-42
+authentication; it does not expose peer topology until the browser session is
+authenticated.
 
 ## Storage
 

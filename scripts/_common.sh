@@ -33,13 +33,14 @@ ynh_app_remove_peer_nginx_config() {
 # after such a regen to restore them from the app settings, which scripts/config keeps in sync in
 # settings.yml independently of config.yaml.
 ynh_app_reapply_peer_lists() {
-	python3 - "$install_dir/config.yaml" "${peers:-}" "${trust_peers:-}" "${allowed_pubkeys:-}" <<'PYEOF'
+	python3 - "$install_dir/config.yaml" "${peers:-}" "${trust_peers:-}" "${allowed_pubkeys:-}" "${admin_pubkeys:-}" <<'PYEOF'
 import sys, yaml
 
-path, peers_raw, trust_peers_raw, allowed_pubkeys_raw = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+path, peers_raw, trust_peers_raw, allowed_pubkeys_raw, admin_pubkeys_raw = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
 peers = [p.strip() for p in peers_raw.split(",") if p.strip()]
 trust_peers = [p.strip() for p in trust_peers_raw.split(",") if p.strip()]
 allowed_pubkeys = [p.strip() for p in allowed_pubkeys_raw.split(",") if p.strip()]
+admin_pubkeys = [p.strip() for p in admin_pubkeys_raw.split(",") if p.strip()]
 
 with open(path) as f:
     data = yaml.safe_load(f) or {}
@@ -47,6 +48,7 @@ with open(path) as f:
 data["peers"] = peers
 data.setdefault("trust", {})["peers"] = trust_peers
 data.setdefault("auth", {})["allowed_pubkeys"] = allowed_pubkeys
+data.setdefault("dashboard", {})["admin_pubkeys"] = admin_pubkeys
 
 with open(path, "w") as f:
     yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)

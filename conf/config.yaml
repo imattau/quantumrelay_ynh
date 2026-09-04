@@ -26,6 +26,12 @@ auth:
   required: __REQUIRE_AUTH__
   allowed_pubkeys: []
 
+dashboard:
+  enabled: false
+  admin_pubkeys: []
+  poll_interval_ms: 3000
+  history_seconds: 300
+
 peers: []
 
 trust:

@@ -102,6 +102,31 @@ PYEOF
 	ynh_app_setting_set --app="$app" --key=allowed_pubkeys --value="$allowed_pubkeys"
 }
 
+get__admin_pubkeys() {
+	python3 - "$install_dir/config.yaml" <<'PYEOF'
+import sys, yaml
+
+with open(sys.argv[1]) as f:
+    data = yaml.safe_load(f) or {}
+print(",".join((data.get("dashboard") or {}).get("admin_pubkeys") or []))
+PYEOF
+}
+
+set__admin_pubkeys() {
+	python3 - "$install_dir/config.yaml" "$admin_pubkeys" <<'PYEOF'
+import sys, yaml
+
+path, raw = sys.argv[1], sys.argv[2]
+items = [p.strip() for p in raw.split(",") if p.strip()]
+with open(path) as f:
+    data = yaml.safe_load(f) or {}
+data.setdefault("dashboard", {})["admin_pubkeys"] = items
+with open(path, "w") as f:
+    yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
+PYEOF
+	ynh_app_setting_set --app="$app" --key=admin_pubkeys --value="$admin_pubkeys"
+}
+
 #=================================================
 # PUBLIC PEER PORT
 #=================================================

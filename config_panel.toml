@@ -39,6 +39,34 @@ services = ["__APP__", "nginx"]
         help.en = "Only these npubs may publish events. Leave empty to allow any authenticated npub."
         bind = "null"
 
+    [main.dashboard]
+    name.en = "Mesh dashboard"
+    help.en = "Read-only topology and health page at /mesh."
+
+        [main.dashboard.enabled]
+        ask.en = "Enable mesh dashboard"
+        type = "boolean"
+        bind = "enabled:__INSTALL_DIR__/config.yaml"
+
+        [main.dashboard.admin_pubkeys]
+        ask.en = "Dashboard administrator npubs"
+        type = "tags"
+        optional = true
+        help.en = "Only these Nostr identities may view the mesh dashboard."
+        bind = "null"
+
+        [main.dashboard.poll_interval_ms]
+        ask.en = "Dashboard poll interval (ms)"
+        type = "number"
+        min = 1000
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [main.dashboard.history_seconds]
+        ask.en = "Dashboard history retention (seconds)"
+        type = "number"
+        min = 0
+        bind = ":__INSTALL_DIR__/config.yaml"
+
     [main.rate_limits]
     name.en = "Rate limiting"
 
