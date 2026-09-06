@@ -9,4 +9,4 @@ other relays in the mesh that the author never configured, driven purely by
 walk probability and reputation — not by every client blasting every relay.
 
 Supports NIP-01, NIP-09, NIP-11, NIP-13, NIP-15, NIP-20, NIP-22, NIP-40,
-NIP-42 and NIP-70.
+NIP-42, NIP-70 and NIP-77.
