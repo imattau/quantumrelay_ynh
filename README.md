@@ -10,7 +10,7 @@ reputation to move notes between relays and suppress spam network-wide.
 ## Status
 
 Pinned to upstream release
-[`v0.1.9`](https://github.com/imattau/quantum-rely/releases/tag/v0.1.9),
+[`v0.1.10`](https://github.com/imattau/quantum-rely/releases/tag/v0.1.10),
 which publishes prebuilt `linux/amd64`/`linux/arm64` binaries via
 [`.github/workflows/release.yml`](https://github.com/imattau/quantum-rely/blob/main/.github/workflows/release.yml)
 in the upstream repo. This package has not yet been run through the
