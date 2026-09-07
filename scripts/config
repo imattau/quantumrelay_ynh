@@ -144,7 +144,7 @@ PYEOF
 
 set__allowed_pubkeys() {
 	if [ -x "$install_dir/quantum-relay" ]; then
-		version="$($install_dir/quantum-relay --version 2>/dev/null || true)"
+		version="$("$install_dir/quantum-relay" --version 2>/dev/null || true)"
 		case "$version" in
 			*"0.1.6"*|*"0.1.7"*|*"0.1.8"*|*"0.1.9"*|*"0.2."*|*"1."*) ;;
 			*) ynh_die "Authorized npubs require quantum-relay v0.1.6 or newer." ;;
