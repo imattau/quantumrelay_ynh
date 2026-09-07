@@ -43,12 +43,18 @@ services = ["__APP__", "nginx"]
     name.en = "Mesh dashboard"
     help.en = "Read-only topology and health page at /mesh."
 
-        [main.dashboard.enabled]
+        [main.dashboard.dashboard_enabled]
         ask.en = "Enable mesh dashboard"
         type = "boolean"
-        # The config file stores this under dashboard.enabled. Use the
-        # custom getter/setter in scripts/config so it cannot collide with
-        # trust.enabled below (the generic top-level bind is ambiguous).
+        # The config file stores this under dashboard.enabled. The option id
+        # must be "dashboard_enabled" (not just "enabled") to match
+        # get__dashboard_enabled/set__dashboard_enabled in scripts/config -
+        # YunoHost dispatches by the exact option id, so a mismatch here
+        # makes those functions dead code and silently no-ops both read and
+        # write (reproduced live 2026-09-07: the config panel always read
+        # back 0 regardless of what was set). This also keeps it from
+        # colliding with trust.enabled below (the generic top-level bind is
+        # ambiguous between two sections that each have their own "enabled").
         bind = "null"
 
         [main.dashboard.admin_pubkeys]
