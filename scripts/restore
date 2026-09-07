@@ -3,6 +3,8 @@
 source "$(dirname "$0")/_common.sh"
 source /usr/share/yunohost/helpers
 
+mkdir -p "$install_dir" "$data_dir" "/var/log/$app"
+
 ynh_restore_file --origin_path="$install_dir" --dest_path="$install_dir"
 ynh_restore_file --origin_path="$data_dir" --dest_path="$data_dir"
 

@@ -21,6 +21,10 @@ ynh_abort_if_errors
 # ambiguously. Keep the section path explicit here.
 
 get__dashboard_enabled() {
+	if [ ! -f "$install_dir/config.yaml" ]; then
+		echo "0"
+		return 0
+	fi
 	python3 - "$install_dir/config.yaml" <<'PYEOF'
 import sys, yaml
 
@@ -46,6 +50,10 @@ PYEOF
 }
 
 get__trust_enabled() {
+	if [ ! -f "$install_dir/config.yaml" ]; then
+		echo "0"
+		return 0
+	fi
 	python3 - "$install_dir/config.yaml" <<'PYEOF'
 import sys, yaml
 
