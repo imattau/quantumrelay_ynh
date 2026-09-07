@@ -13,6 +13,63 @@ ynh_abort_if_errors
 # through PyYAML instead. python3-yaml is a hard dependency of the
 # yunohost package itself, so it's always present.
 
+#=================================================
+# NESTED BOOLEAN FIELDS (dashboard.enabled, trust.enabled)
+#=================================================
+# These must not use the generic "enabled:file" bind: both sections have an
+# enabled key, and the generic config-panel binding resolves them
+# ambiguously. Keep the section path explicit here.
+
+get__dashboard_enabled() {
+	python3 - "$install_dir/config.yaml" <<'PYEOF'
+import sys, yaml
+
+with open(sys.argv[1]) as f:
+    data = yaml.safe_load(f) or {}
+print("1" if (data.get("dashboard") or {}).get("enabled", False) else "0")
+PYEOF
+}
+
+set__dashboard_enabled() {
+	python3 - "$install_dir/config.yaml" "$dashboard_enabled" <<'PYEOF'
+import sys, yaml
+
+path, raw = sys.argv[1], sys.argv[2]
+with open(path) as f:
+    data = yaml.safe_load(f) or {}
+data.setdefault("dashboard", {})["enabled"] = raw in {"1", "true", "True", "yes"}
+with open(path, "w") as f:
+
+	yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
+PYEOF
+	ynh_app_setting_set --app="$app" --key=dashboard_enabled --value="$dashboard_enabled"
+}
+
+get__trust_enabled() {
+	python3 - "$install_dir/config.yaml" <<'PYEOF'
+import sys, yaml
+
+with open(sys.argv[1]) as f:
+    data = yaml.safe_load(f) or {}
+print("1" if (data.get("trust") or {}).get("enabled", False) else "0")
+PYEOF
+}
+
+set__trust_enabled() {
+	python3 - "$install_dir/config.yaml" "$trust_enabled" <<'PYEOF'
+import sys, yaml
+
+path, raw = sys.argv[1], sys.argv[2]
+with open(path) as f:
+    data = yaml.safe_load(f) or {}
+data.setdefault("trust", {})["enabled"] = raw in {"1", "true", "True", "yes"}
+with open(path, "w") as f:
+
+	yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
+PYEOF
+	ynh_app_setting_set --app="$app" --key=trust_enabled --value="$trust_enabled"
+}
+
 get__peers() {
 	python3 - "$install_dir/config.yaml" <<'PYEOF'
 import sys, yaml

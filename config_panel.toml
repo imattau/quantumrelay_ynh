@@ -46,7 +46,10 @@ services = ["__APP__", "nginx"]
         [main.dashboard.enabled]
         ask.en = "Enable mesh dashboard"
         type = "boolean"
-        bind = "enabled:__INSTALL_DIR__/config.yaml"
+        # The config file stores this under dashboard.enabled. Use the
+        # custom getter/setter in scripts/config so it cannot collide with
+        # trust.enabled below (the generic top-level bind is ambiguous).
+        bind = "null"
 
         [main.dashboard.admin_pubkeys]
         ask.en = "Dashboard administrator npubs"
@@ -112,7 +115,10 @@ services = ["__APP__", "nginx"]
         [main.trust.trust_enabled]
         ask.en = "Enable weighted trust for configured peers"
         type = "boolean"
-        bind = "enabled:__INSTALL_DIR__/config.yaml"
+        # The config file stores this under trust.enabled. Use the custom
+        # getter/setter in scripts/config so it cannot collide with
+        # dashboard.enabled above (the generic top-level bind is ambiguous).
+        bind = "null"
 
         [main.trust.trust_weight]
         ask.en = "Trust weight multiplier"
