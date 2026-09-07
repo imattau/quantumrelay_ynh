@@ -16,10 +16,13 @@ gotchas (`.shellcheckrc` for YunoHost's runtime-injected variables, and
 the catalog-membership lint allowlist) apply to every `_ynh` package in
 this family, not just this one.
 
-No CI attestation (`nostr-ynh attest`, kind-30080 signed CI result) is
-wired up yet - CI only produces the unsigned `ci-result.json` artifact.
-That's true of every package in this catalog right now, including the
-catalog daemon's own repo, not a gap specific to this one.
+CI only produces the unsigned `ci-result.json` artifact - nothing in this
+repo signs it into a kind-30080 attestation yet. When that's wanted, the
+right call is `nostr-ynh publish --ci-result ci-result.json ...` (available
+as of nostr-yunohost v0.1.22) - it builds and publishes the declaration and
+its attestation together, signed by the same publisher key already used
+for `catalog_publish`, not a separate verifier keypair. See "Publishing an
+attestation" in nostr-yunohost's `docs/attestations.md`.
 
 ## Config panel option ids must match their get__/set__ function names exactly
 
